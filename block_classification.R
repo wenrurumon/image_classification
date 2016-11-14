@@ -137,6 +137,59 @@ seeds <- function(seed){
        eva=c(seed,eva(train1),eva(test1),eva(train2),eva(test2)))
 }
 
-test <- lapply(1:20000,function(x){try(seeds(x))})
+seeds2 <- function(seed){
+  print(seed)
+  set.seed(seed);trainsel <- subsample(length(d1),2)
+  # lapply(trainsel,function(x){tapply(d1[x],d1[x],length)})
+  # lapply(trainsel,function(x){tapply(d2[x],d2[x],length)})
+  
+  d <- d1; x <- x1; s <- trainsel; zsel <- 10
+  
+  di1 <- d[s[[1]]]
+  xi1 <- x[s[[1]],]
+  xi1.pca <- pca(xi1)
+  mat.pca <- pca(xi1)$mat[,1:which(xi1.pca$prop>0.98)[1]]
+  xi1 <- xi1%*%mat.pca
+  zsel1 <- order(-abs(class_SDR(xi1,di1)[,1]))[1:zsel]
+  xi1 <- xi1[,zsel1,drop=F]
+  
+  mat.lda <- lda(di1~xi1)$scaling
+  pi1 <- (xi1 %*% mat.lda)>0
+  train1 <- table(di1,pi1)
+  
+  di2 <- d[s[[2]]]
+  xi2 <- (x[s[[2]],]%*%mat.pca)[,zsel1,drop=F]
+  pi2 <- (xi2 %*% mat.lda)>0
+  test1 <- table(di2,pi2)
+  
+  d <- d2; x <- x2; s <- trainsel
+  
+  di1 <- d[s[[1]]]
+  xi1 <- x[s[[1]],]
+  xi1.pca <- pca(xi1)
+  mat.pca <- pca(xi1)$mat[,1:which(xi1.pca$prop>0.98)[1]]
+  xi1 <- xi1%*%mat.pca
+  zsel2 <- order(-abs(Class_SDR(xi1,di1)[,1]))[1:zsel]
+  xi1 <- xi1[,zsel2,drop=F]
+  
+  mat.lda <- lda(di1~xi1)$scaling
+  pi1 <- (xi1 %*% mat.lda)>0
+  train2 <- table(di1,pi1)
+  
+  di2 <- d[s[[2]]]
+  xi2 <- (x[s[[2]],]%*%mat.pca)[,zsel2,drop=F]
+  pi2 <- (xi2 %*% mat.lda)>0
+  test2 <- table(di2,pi2)
+  
+  list(seed=seed,
+       rlt=cbind(train1=train1,test1=test1,train2=train2,test2=test2),
+       eva=c(seed,eva(train1),eva(test1),eva(train2),eva(test2)))
+}
+
+test <- lapply(1:1000,function(x){try(seeds(x))})
 test <- t(sapply(test[sapply(test,is.list)],function(x){x$eva}))
 summary(test)
+
+test2 <- lapply(1:1000,function(x){try(seeds2(x))})
+test2 <- t(sapply(test2[sapply(test2,is.list)],function(x){x$eva}))
+summary(test2)
