@@ -137,7 +137,7 @@ seeds <- function(seed){
        eva=c(seed,eva(train1),eva(test1),eva(train2),eva(test2)))
 }
 
-seeds2 <- function(seed){
+seeds_fs <- function(seed,zsel=10,lambda=0.1){
   print(seed)
   set.seed(seed);trainsel <- subsample(length(d1),2)
   # lapply(trainsel,function(x){tapply(d1[x],d1[x],length)})
@@ -169,7 +169,7 @@ seeds2 <- function(seed){
   xi1.pca <- pca(xi1)
   mat.pca <- pca(xi1)$mat[,1:which(xi1.pca$prop>0.98)[1]]
   xi1 <- xi1%*%mat.pca
-  zsel2 <- order(-abs(Class_SDR(xi1,di1)[,1]))[1:zsel]
+  zsel2 <- order(-abs(class_SDR(xi1,di1)[,1]))[1:zsel]
   xi1 <- xi1[,zsel2,drop=F]
   
   mat.lda <- lda(di1~xi1)$scaling
@@ -190,6 +190,19 @@ test <- lapply(1:1000,function(x){try(seeds(x))})
 test <- t(sapply(test[sapply(test,is.list)],function(x){x$eva}))
 summary(test)
 
+seed2 <- function(x){seeds_fs(x,zsel=5,lambda=0.1)}
 test2 <- lapply(1:1000,function(x){try(seeds2(x))})
 test2 <- t(sapply(test2[sapply(test2,is.list)],function(x){x$eva}))
 summary(test2)
+
+rlt <- lapply(seq(0.1,0.9,0.1),function(lambda){
+  rlti <- lapply(5:10,function(zsel){
+    seed2 <- function(x){seeds_fs(x,zsel=5,lambda=0.1)}
+    test2 <- lapply(1:1000,function(x){try(seeds2(x))})
+    test2 <- t(sapply(test2[sapply(test2,is.list)],function(x){x$eva}))
+    return(test2)
+  })
+  names(rlti) <- paste('zsel',5:10)
+  rlti
+})
+names(rlt) <- paste('lambda',seq(0.1,0.9,0.1))
