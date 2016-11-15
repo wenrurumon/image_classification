@@ -43,7 +43,7 @@ subsample <- function(n,ngroup){
   n <- c(cut(sample(1:n),ngroup))
   lapply(1:ngroup,function(i){n==i})
 }
-eva <- function(mat){sum(diag(mat))/sum(mat)}
+eva <- function(mat){c(ACC=mat[2,2]/sum(mat[,2]),SEN=mat[2,2]/sum(mat[2,]))}
 
 setwd('C:\\Users\\zhu2\\Documents\\Lung_CT_CHINA\\processed')
 disease <- unique(read.csv('samplemap.csv')[,c(1,5)])
