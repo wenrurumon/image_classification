@@ -22,37 +22,30 @@ list2array <- function(X){
   out
 }
 
-seg.sel <- function(i,g.base,g.out = NULL){
+seg.sel <- function(i,g.base){
 	temp <- (g.base==i)
 	dimsum <- lapply(1:3,function(j){apply(temp,j,sum)})
-	dimsel <- lapply(dimsum,function(x) x>0)
-	if (is.null(g.out)) {
-		return(dimsel)
-	} else {
-		return(g.out[dimsel[[1]],dimsel[[2]],dimsel[[3]]])
-	}
+	dimsel <- lapply(dimsum,function(x) range(which(x>0)))
+	#lapply(dimsel,function(x) x[[1]]:x[[2]])
+	return(dimsel)
 }
-
-seg.list <- function(g.base){
-	is <- unique(as.vector(g.base))	
-	lapply(sort(is),function(i){
-		print(i)
-		temp <- (g.base==i)
-		dimsum <- lapply(1:3,function(j){apply(temp,j,sum)})
-		dimsel <- lapply(dimsum,function(x) x>0)
-		g.out <- array(FALSE,dim(g.base))
-		g.out[dimsel[[1]],dimsel[[2]],dimsel[[3]]] <- TRUE
-		return(g.out)
-	})
+g.sel <- function(g,sel){
+	g[sel[[1]][1]:sel[[1]][2],sel[[2]][1]:sel[[2]][2],sel[[3]][1]:sel[[3]][2]]
 }
 
 #####################################
 
 #Generate selection array by segmentation
-system.time(g.seg <- seg.list(segmentation))
+system.time(
+	g.base_sel <- lapply(min(segmentation):max(segmentation),function(i){
+		print(i)
+		seg.sel(i,g.base=segmentation)
+	})
+)
 
 #generate the list of graphs
 gs <- lapply(rlt,function(x) x[[1]])
+g1 <- lapply(gs,function(x) x[g.seg[[1]]])
 
 #####################################
 
