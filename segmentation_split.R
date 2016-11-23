@@ -1,5 +1,4 @@
 
-
 rm(list=ls())
 library(oro.dicom)
 library(oro.nifti)
@@ -8,10 +7,9 @@ source('/home/zhu/lung_ct_china/3DFPCA.R')
 
 setwd("/home/zhu/lung_ct_china/model")
 #dir()
-
-load('segmentation.rda')
-load('target.rda')
-load('regrlt10_1.rda')
+#load('segmentation.rda')
+#load('target.rda')
+#load('regrlt10_1.rda')
 
 list2array <- function(X){
   out <- array(0,dim=c(dim(X[[1]]),length(X)))
@@ -36,16 +34,27 @@ g.sel <- function(g,sel){
 #####################################
 
 #Generate selection array by segmentation
-system.time(
-	g.base_sel <- lapply(min(segmentation):max(segmentation),function(i){
-		print(i)
-		seg.sel(i,g.base=segmentation)
-	})
-)
+#system.time(
+#	g.base_sel <- lapply(min(segmentation):max(segmentation),function(i){
+#		print(i)
+#		seg.sel(i,g.base=segmentation)
+#	})
+#)
+load('g_base_sel.rda')
 
-#generate the list of graphs
-gs <- lapply(rlt,function(x) x[[1]])
-g1 <- lapply(gs,function(x) x[g.seg[[1]]])
+#Load all graphs
+files <- dir(pattern='1.rda')
+regrlt <- lapply(files,function(x){
+	print(x)
+	load(x);
+	return(rlt)
+})
 
 #####################################
 
+gs <- lapply(regrlt,function(x) x[[1]])
+gs_seg <- lapply(g.base_sel,function(segi){
+	lapply(gs,funcgion(gi){
+		g.sel(gi,segi)
+		})
+	})
