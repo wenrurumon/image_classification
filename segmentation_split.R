@@ -1,4 +1,5 @@
 
+
 rm(list=ls())
 library(oro.dicom)
 library(oro.nifti)
@@ -52,9 +53,13 @@ regrlt <- lapply(files,function(x){
 
 #####################################
 
+regrlt <- do.call(c,regrlt)
+names(regrlt)[is.na(names(regrlt))|names(regrlt)==' 1'] <- paste0('health',1:66)
+names(regrlt) <- gsub(' 1','',names(regrlt))
+
 gs <- lapply(regrlt,function(x) x[[1]])
 gs_seg <- lapply(g.base_sel,function(segi){
-	lapply(gs,funcgion(gi){
+	lapply(gs,function(gi){
 		g.sel(gi,segi)
 		})
 	})
