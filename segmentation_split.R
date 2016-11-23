@@ -63,3 +63,4 @@ gs_seg <- lapply(g.base_sel,function(segi){
 		g.sel(gi,segi)
 		})
 	})
+array_seg <- lapply(gs_seg,list2array)
