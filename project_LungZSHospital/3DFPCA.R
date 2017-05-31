@@ -252,7 +252,8 @@ FPCA_3D_score <- function(X){
   t <- dim(X)[3]
   k <- dim(X)[4]
   ####calculate the fourier series for each image and combine then into a big matrix
-  FC <- matrix(rep(0,(2*m-1)*(2*n-1)*(2*t-1)*k),ncol=k)
+  #FC <- matrix(rep(0,(2*m-1)*(2*n-1)*(2*t-1)*k),ncol=k)
+  FC <- matrix(0,nrow=(2*m-1)*(2*n-1)*(2*t-1),ncol=k)
   for (i in 1:k){
     FC[,i] <-  as.vector(FFT2FS_3D(X[,,,i]))
   }
