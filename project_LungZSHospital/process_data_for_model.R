@@ -2,22 +2,6 @@
 rm(list=ls())
 setwd('/home/zhu/lung_ct_china/model')
 
-#macro
-
-image2block <- function(x,i,j,k){
-  ci <- as.numeric(cut(1:dim(x)[1],i))
-  cj <- as.numeric(cut(1:dim(x)[2],j))
-  ck <- as.numeric(cut(1:dim(x)[3],j))
-  sel <- expand.grid(i=1:i,j=1:j,k=1:k)
-  out <- lapply(1:nrow(sel),function(r){
-    ri <- ci == sel$i[r]
-    rj <- cj == sel$j[r]
-    rk <- ck == sel$k[r]
-    x[ri,rj,rk]
-  })
-  out
-}
-
 #Load data
 f <- dir(pattern='regrlt')
 raw <- lapply(f,function(x){
@@ -43,7 +27,14 @@ X <- lapply(X,function(x){
   x <- (x-xn)/(xx-xn)
   x
 })
-rm(i)
-X2 <- lapply(X,image2block,i=3,j=3,k=3)
+i <- 0
+X2 <- lapply(X,function(x){
+  print(i<<-i+1)
+  image2block(x,i=3,j=3,k=3)
+})
 Y <- 1-grepl('health',names(X))
-
+i <- 0
+X2_mean <- sapply(X2,function(x){
+  print(i<<-i+1)
+  sapply(x,mean,na.rm=TRUE)
+})
