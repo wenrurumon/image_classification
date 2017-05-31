@@ -1,4 +1,3 @@
-x <- array(rnorm(1000),c(10,10,10))
 
 image2block <- function(x,i,j,k,smooth=F){
   if(smooth){
