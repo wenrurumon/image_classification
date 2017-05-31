@@ -1,6 +1,8 @@
 
 rm(list=ls())
 setwd('/home/zhu/lung_ct_china/model')
+source('/home/zhu/lung_ct_china/3DFPCA.R')
+source('/home/zhu/lung_ct_china/image2block.R')
 
 #Load data
 f <- dir(pattern='regrlt')
@@ -25,6 +27,7 @@ X <- lapply(X,function(x){
   xn <- min(x,na.rm=TRUE)
   xx <- max(x,na.rm=TRUE)
   x <- (x-xn)/(xx-xn)
+  x[is.na(x)] <- 0
   x
 })
 i <- 0
@@ -37,4 +40,10 @@ i <- 0
 X2_mean <- sapply(X2,function(x){
   print(i<<-i+1)
   sapply(x,mean,na.rm=TRUE)
+})
+
+#get data for 3dfpca
+x3d <- lapply(1:length(X2[[1]]),function(i){
+  print(i)
+  lapply(X2,function(x){x[[i]]})
 })
