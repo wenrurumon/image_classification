@@ -45,5 +45,7 @@ X2_mean <- sapply(X2,function(x){
 #get data for 3dfpca
 x3d <- lapply(1:length(X2[[1]]),function(i){
   print(i)
-  lapply(X2,function(x){x[[i]]})
+  lapply(X2,function(x){
+    image2block(x[[i]],30,30,10,T)
+  })
 })
